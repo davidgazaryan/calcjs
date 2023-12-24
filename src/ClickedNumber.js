@@ -1,6 +1,6 @@
-const ClickedNumber = () => {
+const ClickedNumber = ({type,payload,dispatcher}) => {
     return (
-        ''
+        <button onClick={() => dispatcher({type,payload})}>{payload}</button>
     )
 }
 
