@@ -1,8 +1,11 @@
 import logo from './logo.svg';
 import './App.css';
+import ClickedNumber from "./ClickedNumber";
+import React, { useReducer } from "react";
+import './styles/style.css'
 
 function App() {
-  function reducer(state,{type,payload}){ //Add factorials and other stuff when done to make it more complicated 
+  function reducer(state,{type,payload}){ 
     switch(type){
       case 'append':
         if (payload === '.' && state.currentOperand.includes(payload)) return state 
@@ -23,7 +26,7 @@ function App() {
         }
       case 'operand':
         return {
-          ...state, // Need our spread operator so previos state doesn't get overrided by one variable.
+          ...state, 
           previousOperand: state.currentOperand,
           currentOperand: "",
           operation: payload
@@ -48,25 +51,94 @@ function App() {
     }
   }
 
+  function factorial(n) {
+    if (n < 0) return "undefined"
+    if (n === 0) return 0
+    if (n === 1) return 1 
+    n = n * factorial(n-1)
+    return n
+  }
+
+  function evaluate({currentOperand,previousOperand,operation}) { 
+    const previous = parseFloat(previousOperand);
+    const current = parseFloat(currentOperand);
+    if (isNaN(previous) || isNaN(current)) return ""
+    let result = "";
+    switch(operation){
+    default:
+      throw new Error('unknown evaluation')
+    case "+":
+      result = previous + current 
+      break
+    case "-":
+      result = previous - current 
+      break
+    case "*":
+      result = current * previous
+      break
+    case "/":
+      result = (previous / current)
+      break
+    case '^':
+      result = previous ** current
+      break 
+    case '!':
+      try{
+        result = factorial(previous)
+      }
+      catch(err){
+        result = "Infinity"
+      }
+      break
+    }
+    return result;
+  }
+  
   const [{currentOperand, previousOperand, operation} , dispatch] = useReducer(reducer,{currentOperand:""})
   
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="calculator-grid">
+    <div className="output">
+    <div className="previous-operand">
+      {previousOperand}{operation}
     </div>
+    <div className="current-operand">
+        {currentOperand}
+    </div>
+  </div>
+  <button
+    className="span-two"
+    onClick={() => dispatch({type:'clear'})}
+  >
+    AC
+  </button>
+  <button onClick={() => dispatch({type:'deletion'})}>
+    DEL
+  </button>
+  <button onClick={() => dispatch({type:'operand', payload:'/'})}>/</button>
+  <button onClick={() => dispatch({type:'operand',payload:'^'})}>^</button>
+  <ClickedNumber type='append' payload='1' dispatcher={dispatch}/>
+  <ClickedNumber type='append' payload='2' dispatcher={dispatch}/>
+  <ClickedNumber type='append' payload='3' dispatcher={dispatch}/>
+  <button onClick={() => dispatch({type:'operand', payload: '*'})}>*</button>
+  <ClickedNumber type='append' payload='4' dispatcher={dispatch}/>
+  <ClickedNumber type='append' payload='5' dispatcher={dispatch}/>
+  <ClickedNumber type='append' payload='6' dispatcher={dispatch}/>
+  <button onClick={() => dispatch({type:'operand', payload:'+'})}>+</button>
+  <ClickedNumber type='append' payload='7' dispatcher={dispatch}/>
+  <ClickedNumber type='append' payload='8' dispatcher={dispatch}/>
+  <ClickedNumber type='append' payload='9' dispatcher={dispatch}/>
+  <button onClick={() => dispatch({type:'operand', payload:'-'})}>-</button>
+  <button onClick={() => dispatch({type:'append',payload:'.'})}>.</button>
+  <ClickedNumber type='append' payload='0' dispatcher={dispatch}/>
+  <button onClick={() => dispatch({type:'factorial',payload:'!'})}>!</button>
+  <button
+    className="span-two"
+    onClick={()=> dispatch({type:'evaluate'})}
+  >
+    =
+  </button>
+  </div>
   );
 }
 
