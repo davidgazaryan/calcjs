@@ -9,7 +9,7 @@
   
   .calculator-grid {
     display: grid;
-    margin-top: 1rem;
+    margin-top: 5rem;
     justify-content: center;
     grid-template-columns: repeat(4, 6rem);
     grid-template-rows: minmax(7rem, auto) repeat(5, 6rem);
